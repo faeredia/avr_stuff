@@ -97,7 +97,7 @@ uint32_t bmp180_raw_pressure(uint8_t addr){
     _delay_ms(5);
     up = (uint32_t)i2c_read16(addr, BMP180_REG_PRESSURE);
     up <<= 8;
-    up |= (uint32_t)i2c_read8(addr, BMP180_REG_PRESSURE + 2);
+    up |= i2c_read8(addr, BMP180_REG_PRESSURE + 2);
     up >>= (8 - oss);
 
     return up;

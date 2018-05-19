@@ -34,7 +34,7 @@ uint8_t i2c_writeReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t l
 uint8_t i2c_readReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t length);
 void i2c_stop(void);
 
-uint8_t i2c_write8(uint8_t devaddr, uint8_t regaddr);
+uint8_t i2c_write8(uint8_t devaddr, uint8_t regaddr, uint8_t data);
 
 uint8_t i2c_read8(uint8_t devaddr, uint8_t regaddr);
 uint16_t i2c_read16(uint8_t devaddr, uint8_t regaddr);
