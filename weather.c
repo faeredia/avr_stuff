@@ -29,9 +29,9 @@ int main (void)
  
   printf("Sensor,Value,Units\n");
   while(1){
-    bmp180_get_temperature(BMP180_ADDR, &temperature);
+    temperature = bmp180_get_temperature(BMP180_ADDR);
     printf("BMP180_Temperature,%d.%d,c\n", (int16_t)(temperature/10), (int16_t)(temperature % 10));
-    bmp180_get_pressure(BMP180_ADDR, &pressure);
+    pressure = bmp180_get_pressure(BMP180_ADDR);
     printf("BMP180_Pressure,%d.%d,kPa\n", (uint16_t)(pressure/1000), (uint16_t)(pressure % 1000)) ;
     _delay_ms(5*1000);
   }

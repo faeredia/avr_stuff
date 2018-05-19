@@ -34,12 +34,12 @@ bmp180_get_temperature(0x77, &temperature_variable);
 uint8_t bmp180_get_cal_param(uint8_t addr);
 #define bmp180_init bmp180_get_cal_param //convenience wrapper
 
-uint8_t bmp180_raw_temperature(uint8_t addr, uint16_t *result);
+uint16_t bmp180_raw_temperature(uint8_t addr);
 //public function to get the calibrated pressure
-uint8_t bmp180_get_temperature(uint8_t addr, int16_t *temperature);
+int16_t bmp180_get_temperature(uint8_t addr);
 
-uint8_t bmp180_raw_pressure(uint8_t addr, uint32_t *up);
+uint32_t bmp180_raw_pressure(uint8_t addr);
 //public function to get the calibrated pressure
-uint8_t bmp180_get_pressure(uint8_t addr, int32_t *pressure);
+int32_t bmp180_get_pressure(uint8_t addr);
 
 #endif //_LIB_BMP180_H
