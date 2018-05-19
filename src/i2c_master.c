@@ -25,8 +25,8 @@ uint8_t i2c_init(void)
 	return 0;
 }
 
-uint8_t i2c_addr7_to_addr8(uint8_t *addr7){
-	return = *addr7 << 1;
+uint8_t i2c_addr7_to_addr8(uint8_t addr7){
+	return addr7 << 1;
 }
 
 uint8_t i2c_start(uint8_t address)
@@ -123,7 +123,7 @@ uint8_t i2c_receive(uint8_t address, uint8_t* data, uint16_t length)
 uint8_t i2c_writeReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t length)
 {
 	uint8_t addr8;
-	i2c_addr7_to_addr8(&devaddr, &addr8);
+	addr8 = i2c_addr7_to_addr8(devaddr);
 	if (i2c_start(addr8 | I2C_WRITE)) return 1;
 
 	i2c_write(regaddr);
@@ -140,7 +140,7 @@ uint8_t i2c_writeReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t l
 
 uint8_t i2c_write8(uint8_t devaddr, uint8_t regaddr, uint8_t data)
 {
-	uint8_t addr8 = i2c_addr7_to_addr8(&devaddr);
+	uint8_t addr8 = i2c_addr7_to_addr8(devaddr);
 
 	if (i2c_start(addr8 | I2C_WRITE)) return 1;
 
@@ -156,7 +156,7 @@ uint8_t i2c_write8(uint8_t devaddr, uint8_t regaddr, uint8_t data)
 uint8_t i2c_readReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t length)
 {
 	uint8_t addr8;
-	i2c_addr7_to_addr8(&devaddr, &addr8);
+	addr8 = i2c_addr7_to_addr8(devaddr);
 
 	if (i2c_start(addr8 | I2C_WRITE)) return 1;
 
@@ -178,7 +178,7 @@ uint8_t i2c_readReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t le
 uint8_t i2c_read8(uint8_t devaddr, uint8_t regaddr)
 {
 	uint8_t addr8, result;
-	addr8 = i2c_addr7_to_addr8(&devaddr, &addr8);
+	addr8 = i2c_addr7_to_addr8(devaddr);
 
 	if (i2c_start(addr8 | I2C_WRITE)) return 1;
 	i2c_write(regaddr);
@@ -194,7 +194,7 @@ uint16_t i2c_read16(uint8_t devaddr, uint8_t regaddr)
 {
 	uint8_t addr8;
 	uint16_t result;
-	addr8 = i2c_addr7_to_addr8(&devaddr, &addr8);
+	addr8 = i2c_addr7_to_addr8(devaddr);
 
 	if (i2c_start(addr8 | I2C_WRITE)) return 1;
 	i2c_write(regaddr);
