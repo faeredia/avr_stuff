@@ -6,8 +6,10 @@
 #include "src/uart.h"
 #include "src/i2c_master.h"
 #include "src/libBMP180.h"
+#include "src/libBME280"
 
 #define BMP180_ADDR 0x77
+#define BME280_ADDR 0x76
 
 int main (void)
 {
@@ -20,6 +22,11 @@ int main (void)
 
   //bmp180_get_cal_param(BMP180_ADDR);
   bmp180_init(BMP180_ADDR);
+  bme280_init(BME280_ADDR);
+
+  BME280_DATA bme_d = {0};
+  bme_d = bme280_get_thp(BME280_ADDR);
+  printf("t: %ld\np: %ul\nh: %ul\n", bme_d.temperature, bme_d.pressure, bme_d.humidity);
 
   int16_t temperature =0;
   int32_t pressure =0;
