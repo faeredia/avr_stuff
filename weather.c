@@ -24,7 +24,7 @@ int main (void)
   bmp180_init(BMP180_ADDR);
   bme280_init(BME280_ADDR);
 
-  BME280_DATA bme_d = {0};
+  BME280_DATA_INIT bme_d;
   bme_d = bme280_get_thp(BME280_ADDR);
   printf("t: %ld\np: %ul\nh: %ul\n", bme_d.temperature, bme_d.pressure, bme_d.humidity);
 

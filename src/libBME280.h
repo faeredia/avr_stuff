@@ -15,6 +15,9 @@ typedef struct {
     int32_t     pressure;
 } BME280_DATA;
 
+//preferred type when creating a new BME280_DATA, init all values to 0
+const BME280_DATA BME280_DATA_INIT = {0};
+
 //call after i2c_init()
 //Called to initialise the sensor/loads calibration data into memory
 void bme280_init(uint8_t devaddr);

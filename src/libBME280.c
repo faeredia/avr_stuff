@@ -20,7 +20,7 @@ typedef struct {
 //initialise an empty uncalibrated data struct
 //this is the preferred way of creating a new UNCAL_DATA struct
 const BME280_UNCAL_DATA BME280_UNCAL_DATA_INIT = {0};
-const BME280_DATA BME280_DATA_INIT = {0};
+
 
 static void bme280_read_calibration_terms(uint8_t devaddr);
 static BME280_UNCAL_DATA bme280_get_uncompensated_data(uint8_t devaddr);
@@ -123,7 +123,7 @@ BME280_DATA bme280_get_thp_bystruct(uint8_t devaddr){
 BME280_UNCAL_DATA bme280_get_uncompensated_data(uint8_t devaddr){
     //write to the control register to take a reading
     uint8_t rd[8];
-    BME280_UNCAL_DATA ud;
+    BME280_UNCAL_DATA_INIT ud;
     uint32_t msb, lsb, xlsb;
 
     // 0b 001    001     01
