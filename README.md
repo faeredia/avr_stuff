@@ -7,7 +7,7 @@ Some random stuff for avr
   
 weather.c is a basic demonstration for using these libraries.  
   
-## Makefile
+## Makefile:
 This can be reused elsewhere.  
 Some useful commands:  
     make all        -   Compile the program with avr-gcc  
@@ -19,6 +19,7 @@ Some useful commands:
 Chain make commands together for a good one liner:
     make all upload listen
   
-## Scripts
+## Scripts:
 Useful scripts  
     reset.py        -   Easy way to reset the attached arduino (used when calling)  
+    lines.py        -   Count files and lines of code
