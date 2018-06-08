@@ -1,7 +1,7 @@
 
-#include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "libBME280.h"
 #include "i2c_master.h"
@@ -19,12 +19,11 @@ typedef struct {
 
 //initialise an empty uncalibrated data struct
 //this is the preferred way of creating a new UNCAL_DATA struct
-const BME280_UNCAL_DATA BME280_UNCAL_DATA_INIT = {0};
-
+//const BME280_UNCAL_DATA BME280_UNCAL_DATA_INIT = {0};
 
 static void bme280_read_calibration_terms(uint8_t devaddr);
 static BME280_UNCAL_DATA bme280_get_uncompensated_data(uint8_t devaddr);
-static BME280_UNCAL_DATA bme280_get_compensated_data(BME280_UNCAL_DATA *ud);
+static BME280_DATA bme280_get_compensated_data(BME280_UNCAL_DATA *ud);
 static int32_t bme280_calc_t_fine(BME280_UNCAL_DATA *ud);
 static int32_t bme280_compensated_temperature(BME280_UNCAL_DATA *ud);
 static uint32_t bme280_compensated_humidity(BME280_UNCAL_DATA *ud);
@@ -70,11 +69,15 @@ void bme280_init(uint8_t devaddr){
 
 //might want to call this again later...
 void bme280_read_calibration_terms(uint8_t devaddr){
-    uint8_t cal1[BME280_REG_CAL1_LEN];
-    uint8_t cal2[BME280_REG_CAL2_LEN];
+    //uint8_t cal1[BME280_REG_CAL1_LEN];
+    //uint8_t cal2[BME280_REG_CAL2_LEN];
+    uint8_t *cal1;
+    cal1 = malloc(BME280_REG_CAL1_LEN * sizeof(uint8_t));
+    uint8_t *cal2;
+    cal2 = malloc(BME280_REG_CAL2_LEN * sizeof(uint8_t));
 
-    uint8_t i2c_readReg(devaddr, BME280_REG_CAL1, &cal1, BME280_REG_CAL1_LEN);
-    uint8_t i2c_readReg(devaddr, BME280_REG_CAL2, &cal2, BME280_REG_CAL2_LEN);
+    i2c_readReg(devaddr, BME280_REG_CAL1, cal1, BME280_REG_CAL1_LEN);
+    i2c_readReg(devaddr, BME280_REG_CAL2, cal2, BME280_REG_CAL2_LEN);
 
     //cal1
     _cal_t1 = (uint16_t)(cal1[0]) << 8 | cal1[1];
@@ -90,7 +93,15 @@ void bme280_read_calibration_terms(uint8_t devaddr){
     _cal_p8 = (int16_t)(cal1[20]) << 8 | cal1[21];
     _cal_p9 = (int16_t)(cal1[22]) << 8 | cal1[23];
     _cal_h1 = (uint8_t)(cal1[24]);
-
+    //print the cal terms
+    printf("cal t1: %d\n", _cal_t1);
+    printf("cal t2: %d\n", _cal_t2);
+    printf("cal t3: %d\n", _cal_t3);
+    printf("cal p1: %d\n", _cal_p1);
+    printf("cal p2: %d\n", _cal_p2);
+    printf("cal p3: %d\n", _cal_p3);
+    printf("cal p4: %d\n", _cal_p4);
+    printf("cal p5: %d\n", _cal_t1);
     //cal2
     _cal_h2 = (int16_t) (cal2[0]) << 8 | cal2[1];
     _cal_h3 = (uint8_t) (cal2[2]);
@@ -100,6 +111,8 @@ void bme280_read_calibration_terms(uint8_t devaddr){
     _cal_h5 = (int16_t) (cal2[5]) << 4 | cal2[6]; //make 8 bits of space for lsb, only keep 4 smallest bits of msb
     _cal_h6 = (int8_t)  (cal2[7]);
 
+    free(cal1);
+    free(cal2);
 }
 
 //just a wrapper for the bme280_get_thp_bystruct if the user doesnt want to make a BME280_DATA
@@ -112,53 +125,62 @@ void bme280_get_thp_bypointer(uint8_t devaddr, int32_t *t, uint32_t *h, int32_t 
 }
 
 BME280_DATA bme280_get_thp_bystruct(uint8_t devaddr){
-    BME280_UNCAL_DATA_INIT ud;
+    BME280_UNCAL_DATA ud = {0};
     ud = bme280_get_uncompensated_data(devaddr);
 
-    BME280_DATA_INIT d;
+    BME280_DATA d = {0};
     d =  bme280_get_compensated_data(&ud);
+
     return d;
 }
 
 BME280_UNCAL_DATA bme280_get_uncompensated_data(uint8_t devaddr){
     //write to the control register to take a reading
-    uint8_t rd[8];
-    BME280_UNCAL_DATA_INIT ud;
+    //uint8_t rd[8];
+    uint8_t *rd; //register-data
+    rd = malloc(BME280_REG_DATA_LEN * sizeof(uint8_t));
+
+    BME280_UNCAL_DATA ud = {0};
     uint32_t msb, lsb, xlsb;
 
     // 0b 001    001     01
     //   p_oss  t_oss  measure
     msb = 0x01 << 5;
-    lsb = 0x01 << 2;
+    lsb = 0x01 << 3;
     xlsb = 0x01;
     i2c_write8(devaddr, BME280_REG_CTRL, (uint8_t)(msb | lsb | xlsb));
 
-    i2c_readREG(devaddr, BME280_REG_DATA, &rd, BME280_REG_DATA_LEN);
+    i2c_readReg(devaddr, BME280_REG_DATA, rd, BME280_REG_DATA_LEN);
 
     msb = (uint32_t)rd[0] << 12;
     lsb = (uint32_t)rd[1] << 4;
     xlsb = (uint32_t)rd[2] >> 4;
-    ud.pressure = msb | lsb | xlsb;
+    ud.up = msb | lsb | xlsb;
+    printf("UP-- msb: %lu\tlsb: %lu\txlsb: %lu\tFINAL: %lu\n", msb,lsb,xlsb,ud.up);
 
     msb = (uint32_t)rd[3] << 12;
     lsb = (uint32_t)rd[4] << 4;
     xlsb = (uint32_t)rd[5] >> 4;
-    ud.temperature = msb | lsb | xlsb;
+    ud.ut = msb | lsb | xlsb;
 
     msb = (uint32_t)rd[6] << 8;
     lsb = (uint32_t)rd[7];
-    ud.humidity = msb | lsb;
+    ud.uh = msb | lsb;
     
+    free(rd);
+
     return ud;
 }
 
 BME280_DATA bme280_get_compensated_data(BME280_UNCAL_DATA *ud){
     //set t_fine before doing other calccs.
-    BME280_DATA_INIT d;
+    BME280_DATA d = {0};
     ud->t_fine = bme280_calc_t_fine(ud);
     d.temperature = bme280_compensated_temperature(ud);
     d.humidity = bme280_compensated_humidity(ud);
     d.pressure = bme280_compensated_pressure(ud);
+    
+    return d;
 }
 
 /**************************************************
@@ -168,15 +190,16 @@ BME280_DATA bme280_get_compensated_data(BME280_UNCAL_DATA *ud){
  *************************************************/
 
 int32_t bme280_calc_t_fine(BME280_UNCAL_DATA *ud){
-    //should this return t_fine, or set it directly in the struct pointer??????
-    //this way is more verbose....
     int32_t var1, var2;
     var1 = ((((ud->ut>>3) - ((int32_t)_cal_t1<<1))) * ((int32_t)_cal_t2)) >>11;
     var2 = (((((ud->ut>>4) - ((int32_t)_cal_t1)) * ((ud->ut>>4) - ((int32_t)_cal_t1))) >> 12) * ((int32_t)_cal_t3)) >> 14;
-    return = var1 + var2;
+    return (var1 + var2);
 }
 
 int32_t bme280_compensated_temperature(BME280_UNCAL_DATA *ud){
+    //print out eveything we know
+    printf("We are in compensated temperature calc.\n");
+    printf("up: %ld, ut: %ld, uh: %ld, t_fine: %ld\n", ud->up, ud->ut, ud->uh, ud->t_fine);
     if(ud->t_fine == 0){
         bme280_calc_t_fine(ud);
     }
@@ -192,13 +215,13 @@ uint32_t bme280_compensated_humidity(BME280_UNCAL_DATA *ud){
     int32_t var1;
 
     var1 = (ud->t_fine - ((int32_t)76800));
-    var1 = (((((ud->humidity << 14) - (((int32_t)_cal_h4) << 20) - (((int32_t)_cal_h5) * var1)) + 
-        ((int32_t_16384)) >> 15) * ((((((var1 * ((int32_t)_cal_h6)) >> 10) + (((var1 *
+    var1 = (((((ud->uh << 14) - (((int32_t)_cal_h4) << 20) - (((int32_t)_cal_h5) * var1)) + 
+        ((int32_t)16384)) >> 15) * (((((((var1 * ((int32_t)_cal_h6)) >> 10) + (((var1 *
         ((int32_t)_cal_h3)) >> 11) + ((int32_t)32768))) >> 10) + ((int32_t)2097152)) * 
         ((int32_t)_cal_h2) + 8192) >> 14));
     var1 = (var1 - (((((var1 >> 15) * (var1 >> 15)) >> 7) * ((int32_t)_cal_h1)) >> 4));
     var1 = (var1 < 0 ? 0 : var1);
-    var1 = (var1 > 419430400 ? 419430400 : var);
+    var1 = (var1 > 419430400 ? 419430400 : var1);
     return (uint32_t)(var1 >> 12);
 }
 
@@ -216,7 +239,7 @@ uint32_t bme280_compensated_pressure(BME280_UNCAL_DATA *ud){
     var1 = (((_cal_p3 * (((var1 >> 2) * (var1 >> 2)) >> 13)) >> 3) + ((((int32_t)_cal_p2) * var1) >> 1 )) >> 18;
     var1 = ((((32768 + var1)) * ((int32_t)_cal_p1)) >> 15);
     if(var1 == 0) return 0; //avoid divide by 0
-    p = (((uint32_t)(((int32_t)1048576) - ud->pressure) - (var2>>12))) * 3125;
+    p = (((uint32_t)(((int32_t)1048576) - ud->up) - (var2>>12))) * 3125;
     if (p < 0x80000000){
         p = (p << 1) / ((uint32_t)var1);
     } else {
@@ -227,3 +250,4 @@ uint32_t bme280_compensated_pressure(BME280_UNCAL_DATA *ud){
     p = (uint32_t)((int32_t)p + ((var1 + var2 + _cal_p7) >> 4));
     return p;
 }
+

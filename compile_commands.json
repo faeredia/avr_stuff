@@ -1,0 +1,102 @@
+[
+    {
+        "arguments": [
+            "cc",
+            "-c",
+            "-g",
+            "-Wall",
+            "-Os",
+            "-mmcu=atmega328p",
+            "-DF_CPU=16000000L",
+            "-Iinclude/",
+            "-I/usr/avr/include/",
+            "-I/home/brandon/usr/include/ArduinoCore-avr/cores/arduino",
+            "-I/home/brandon/usr/include/ArduinoCore-avr/variants/mega/",
+            "-o",
+            "obj/weather.o",
+            "src/weather.c"
+        ],
+        "directory": "/home/brandon/Documents/avr_2",
+        "file": "src/weather.c"
+    },
+    {
+        "arguments": [
+            "cc",
+            "-c",
+            "-g",
+            "-Wall",
+            "-Os",
+            "-mmcu=atmega328p",
+            "-DF_CPU=16000000L",
+            "-Iinclude/",
+            "-I/usr/avr/include/",
+            "-I/home/brandon/usr/include/ArduinoCore-avr/cores/arduino",
+            "-I/home/brandon/usr/include/ArduinoCore-avr/variants/mega/",
+            "-o",
+            "obj/i2c_master.o",
+            "src/i2c_master.c"
+        ],
+        "directory": "/home/brandon/Documents/avr_2",
+        "file": "src/i2c_master.c"
+    },
+    {
+        "arguments": [
+            "cc",
+            "-c",
+            "-g",
+            "-Wall",
+            "-Os",
+            "-mmcu=atmega328p",
+            "-DF_CPU=16000000L",
+            "-Iinclude/",
+            "-I/usr/avr/include/",
+            "-I/home/brandon/usr/include/ArduinoCore-avr/cores/arduino",
+            "-I/home/brandon/usr/include/ArduinoCore-avr/variants/mega/",
+            "-o",
+            "obj/uart.o",
+            "src/uart.c"
+        ],
+        "directory": "/home/brandon/Documents/avr_2",
+        "file": "src/uart.c"
+    },
+    {
+        "arguments": [
+            "cc",
+            "-c",
+            "-g",
+            "-Wall",
+            "-Os",
+            "-mmcu=atmega328p",
+            "-DF_CPU=16000000L",
+            "-Iinclude/",
+            "-I/usr/avr/include/",
+            "-I/home/brandon/usr/include/ArduinoCore-avr/cores/arduino",
+            "-I/home/brandon/usr/include/ArduinoCore-avr/variants/mega/",
+            "-o",
+            "obj/libBME280.o",
+            "src/libBME280.c"
+        ],
+        "directory": "/home/brandon/Documents/avr_2",
+        "file": "src/libBME280.c"
+    },
+    {
+        "arguments": [
+            "cc",
+            "-c",
+            "-g",
+            "-Wall",
+            "-Os",
+            "-mmcu=atmega328p",
+            "-DF_CPU=16000000L",
+            "-Iinclude/",
+            "-I/usr/avr/include/",
+            "-I/home/brandon/usr/include/ArduinoCore-avr/cores/arduino",
+            "-I/home/brandon/usr/include/ArduinoCore-avr/variants/mega/",
+            "-o",
+            "obj/libBMP180.o",
+            "src/libBMP180.c"
+        ],
+        "directory": "/home/brandon/Documents/avr_2",
+        "file": "src/libBMP180.c"
+    }
+]

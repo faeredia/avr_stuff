@@ -1,10 +1,16 @@
-PRG            = weather
-OBJ            = weather.o src/uart.o src/i2c_master.o src/libBMP180.o
+#name of the produced executable
+PRG		= weather
+SRC_DIR		= src
+OBJ_DIR		= obj
+SRC		= $(wildcard $(SRC_DIR)/*.c)
+OBJ		= $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o) 
+
+#name of the target mcu
 MCU_TARGET     = atmega328p
 OPTIMIZE       = -Os
-
+#DF_CPU is the cpu speed of the target. 
 DEFS           = -DF_CPU=16000000L
-INC            = -I/home/brandon/usr/include/ArduinoCore-avr/cores/arduino -I/home/brandon/usr/include/ArduinoCore-avr/variants/mega/
+INC            = -Iinclude/ -I/usr/avr/include/ -I/home/brandon/usr/include/ArduinoCore-avr/cores/arduino -I/home/brandon/usr/include/ArduinoCore-avr/variants/mega/
 LIBS           =
 
 TARGET_DIR     = bld
@@ -42,9 +48,13 @@ upload:
 $(PRG).elf: $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
 clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
+	rm -rf obj/*.o
 
 lst:  $(PRG).lst
 

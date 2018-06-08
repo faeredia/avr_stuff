@@ -42,7 +42,7 @@ uint8_t bmp180_get_cal_param(uint8_t addr){
 
     #else
     //use d to read the value, then cast to the right type.
-    uint16_t d;
+    //uint16_t d;
     ac1 = (int16_t)i2c_read16(addr, BMP180_CAL_AC1);
     ac2 = (int16_t)i2c_read16(addr, BMP180_CAL_AC2);
     ac3 = (int16_t)i2c_read16(addr, BMP180_CAL_AC3);
